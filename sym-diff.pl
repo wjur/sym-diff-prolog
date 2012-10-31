@@ -17,3 +17,10 @@ diff(E, V, 1) :-
 diff(E1 + E2, V, Ed1 + Ed2) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2).
+	
+% subtraction
+diff(E1 - E2, V, Ed1 - Ed2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2).
+	
+
