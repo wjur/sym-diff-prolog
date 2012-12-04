@@ -17,16 +17,22 @@ opt_sum(X+Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % optymalizacja mnozenia
-opt_mul(W, X, Y) :-
-	X == 1,
-	W == Y.
+opt_mul(0, 0, _).
+opt_mul(0, _, 0).
+
+opt_mul(Y, 1, Y).
+opt_mul(X, X, 1).
+
+opt_mul(Y, X, Y) :-
+	X == 1.
+
 	
 opt_mul(W, X, Y) :-
-	Y == 1,
-	W == 777.
+	number(X),
+	number(Y),
+	W is X * Y.
 
-opt_mul(W, X, Y) :-
-	W == (X*Y).
+opt_mul(X*Y, X, Y).
 
 % constant
 diff(E, _, 0) :- number(E).
