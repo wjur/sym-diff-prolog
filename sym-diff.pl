@@ -1,7 +1,9 @@
+% diff(x^(x*log(cos(x))), x, N).
+% N = x^(exp(log(1/x))-1)*(exp(log(1/x))+ - (1)/(x*x)/(1/x)*exp(log(1/x))*x*log(x))*cos(x^exp(log(1/x)))
+
 % diff(expr, var, div)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% optymalizacja dodawania
 opt_sum(X, X, 0).
 opt_sum(Y, 0, Y).
 
@@ -16,7 +18,6 @@ opt_sum(2*X, X, Y) :-
 opt_sum(X+Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% optymalizacja odejmowania
 opt_sub(X, X, 0).
 opt_sub(-Y, 0, Y).
 
@@ -31,7 +32,6 @@ opt_sub(0, X, Y) :-
 opt_sub(X-Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% optymalizacja mnozenia
 opt_mul(0, 0, _).
 opt_mul(0, _, 0).
 
@@ -49,7 +49,6 @@ opt_mul(W, X, Y) :-
 opt_mul(X*Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% optymalizacja dzielenia
 opt_div(_,_,0) :-
 	throw(error(evaluation_error(zero_divisor),(is)/2)).
 	
@@ -69,7 +68,7 @@ opt_div(X/Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-% rozniczkowanie wlasciwe
+% diff
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % constant
 diff(E, _, 0) :- number(E).
@@ -84,7 +83,6 @@ diff(E, V, 1) :-
 	atom(E),
 	E == V.
 
-%%%% sumy i optymalizacja sum	
 % sum
 diff(E1 + E2, V, W) :- 
 	diff(E1, V, Ed1),
@@ -97,7 +95,6 @@ diff(E1 - E2, V, W) :-
 	diff(E2, V, Ed2),
 	opt_sub(W, Ed1, Ed2).
 	
-%%% iloczyn i optymalizacje
 % (fg)' = f'g + fg'
 diff(E1 * E2, V, W) :- 
 	diff(E1, V, Ed1),
@@ -107,7 +104,6 @@ diff(E1 * E2, V, W) :-
 	opt_sum(W, L, P).
 
 
-%%% iloraz i optymalizacje	
 % (f/g)' = (f'g - fg') / (g*g)
 diff(E1 / E2, V, E) :- 
 	diff(E1, V, Ed1),
@@ -118,7 +114,7 @@ diff(E1 / E2, V, E) :-
 	opt_sub(D, A, B),
 	opt_div(E, D,C).
 
-% pochodne funkcji zgodnie ze wzorem
+% functions
 % (h(g))' = h'(g) * g'
 diff(sin(E), V, M) :-
     diff(E,V, Ed),
