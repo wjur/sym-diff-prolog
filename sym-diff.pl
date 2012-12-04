@@ -34,8 +34,23 @@ diff(E1 / E2, V, (Ed1*E2 - E1*Ed2)/(E2*E2)) :-
 	diff(E2, V, Ed2).
 	
 % (h(g))' = h'(g) * g'
-%diff(F, X, Hd(G) * Gd) :-
-%	functor(F, __, 2),
-%	arg(0, F, G),
+%diff(F, X, Hd * Gd) :-
+%	functor(F, H, 1),
+%	arg(1, H, G),
+%    diff(G, X, Gd),
+%    diff(H, X, Hd).
 	
 % (f^g)' = f^(g-1)*(gf' + g'f logf) 
+diff(F^G, V, F^(G-1)*(G*Fd + Gd*F*log(F))) :-
+    diff(F, V, Fd),
+    diff(G, V, Gd).
+
+% diff sin = cos
+diff(sin(E), V, Ed*cos(E)) :-
+    diff(E,V, Ed).
+    
+diff(cos(E), V, -Ed*sin(E)) :-
+    diff(E,V, Ed).
+    
+diff(exp(E), V, Ed*exp(E)) :-
+    diff(E,V, Ed).
