@@ -16,6 +16,21 @@ opt_sum(2*X, X, Y) :-
 opt_sum(X+Y, X, Y).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
+% optymalizacja odejmowania
+opt_sub(X, X, 0).
+opt_sub(-Y, 0, Y).
+
+opt_sub(W, X, Y) :-
+	number(X),
+	number(Y),
+	W is X - Y.
+
+opt_sub(0, X, Y) :- 
+	X == Y.
+	
+opt_sub(X-Y, X, Y).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 % optymalizacja mnozenia
 opt_mul(0, 0, _).
 opt_mul(0, _, 0).
@@ -52,6 +67,10 @@ opt_div(W, X, Y) :-
 
 opt_div(X/Y, X, Y).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% rozniczkowanie wlasciwe
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 % constant
 diff(E, _, 0) :- number(E).
 
@@ -67,111 +86,91 @@ diff(E, V, 1) :-
 
 %%%% sumy i optymalizacja sum	
 % sum
-diff(E1 + E2, V, Ed1pEd2) :- 
+diff(E1 + E2, V, W) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2),
-	opt_sum(Ed1pEd2, Ed1, Ed2).
-
-
-%%% roznice i optymalizacja roznic	
-diff(E1 - E2, V, Ed1) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed2 == 0.
-	
-diff(E1 - E2, V, Ed2) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed1 == 0.
-
-diff(E1 - E2, V, Ed) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	number(Ed1),
-	number(Ed2),
-	Ed == (Ed1 + Ed2).	
+	opt_sum(W, Ed1, Ed2).
 
 % subtraction
-diff(E1 - E2, V, Ed1 - Ed2) :- 
+diff(E1 - E2, V, W) :- 
 	diff(E1, V, Ed1),
-	diff(E2, V, Ed2).
+	diff(E2, V, Ed2),
+	opt_sub(W, Ed1, Ed2).
 	
 %%% iloczyn i optymalizacje
 % (fg)' = f'g + fg'
-% mnozenie razy 0
-diff(E1 * E2, V, E1*Ed2) :- 
+diff(E1 * E2, V, W) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2),
-	Ed1 == 0.
-	
-diff(E1 * E2, V, Ed1*E2) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed2 == 0.
-	
-diff(E1 * E2, V, 0) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed2 == 0,
-	Ed1 == 0.
-
-% mnozenie razy 1
-diff(E1 * E2, V, E2 + E1*Ed2) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed1 == 1.
-	
-diff(E1 * E2, V, Ed1*E2 + E1) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed2 == 1.
-
-diff(E1 * E2, V, E2 + E1) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	Ed1 == 1,
-	Ed2 == 1.
-	
-
-
-diff(E1 * E2, V, mEd1E2 + mE1Ed2) :- 
-	diff(E1, V, Ed1),
-	diff(E2, V, Ed2),
-	opt_mul(mEd1E2, Ed1, E2),
-	opt_mul(mE1Ed2, E1, Ed2).
-
-%diff(E1 * E2, V, Ed1*E2 + E1*Ed2) :- 
-%	diff(E1, V, Ed1),
-%	diff(E2, V, Ed2).
+	opt_mul(L, Ed1, E2),
+	opt_mul(P, E1, Ed2),
+	opt_sum(W, L, P).
 
 
 %%% iloraz i optymalizacje	
 % (f/g)' = (f'g - fg') / (g*g)
-diff(E1 / E2, V, (Ed1*E2 - E1*Ed2)/(E2*E2)) :- 
+diff(E1 / E2, V, E) :- 
 	diff(E1, V, Ed1),
-	diff(E2, V, Ed2).
+	diff(E2, V, Ed2),
+	opt_mul(A, Ed1,E2),
+	opt_mul(B, E1,Ed2),
+	opt_mul(C, E2,E2),
+	opt_sub(D, A, B),
+	opt_div(E, D,C).
 
 % pochodne funkcji zgodnie ze wzorem
 % (h(g))' = h'(g) * g'
-diff(sin(E), V, Ed*cos(E)) :-
-    diff(E,V, Ed).
+diff(sin(E), V, M) :-
+    diff(E,V, Ed),
+	opt_mul(M, Ed, cos(E)).
 
-diff(cos(E), V, -Ed*sin(E)) :-
-    diff(E,V, Ed).
+diff(cos(E), V, K) :-
+    diff(E,V, Ed),
+	opt_mul(M, Ed,sin(E)),
+	opt_sub(K, 0, M).
 	
-diff(tan(E), V, Ed*2/(2*cos(2*E)+1)) :-
-    diff(E,V, Ed).
+diff(tan(E), V, F) :-
+    diff(E,V, Ed),
+	opt_mul(A, Ed, 2),
+	opt_mul(B, 2, E),
+	opt_mul(C, 2, cos(B)),
+	opt_sum(D, C, 1),
+	opt_div(F, A, D).
+	
+diff(exp(E), V, F) :-
+    diff(E,V, Ed),
+	opt_mul(F, Ed, exp(E)).
 
-diff(exp(E), V, Ed*exp(E)) :-
-    diff(E,V, Ed).	
-
-diff(log(E), V, Ed/E) :-
-    diff(E,V, Ed).		
+diff(log(E), V, F) :-
+    diff(E,V, Ed),
+	opt_div(F, Ed, E).
 	
 % (f^g)' = f^(g-1)*(gf' + g'f logf) 
-diff(F^G, V, F^(G-1)*(G*Fd + Gd*F*log(F))) :-
+diff(F^G, V, FF) :-
     diff(F, V, Fd),
-    diff(G, V, Gd).
+    diff(G, V, Gd),
+	opt_sub(AA, G, 1),
+	opt_mul(BB, G,Fd),
+	opt_mul(CC, Gd, F),
+	opt_mul(DD, CC, log(F)),
+	opt_sum(EE, BB, DD),
+	opt_mul(FF, F^(AA), EE).
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 
