@@ -12,11 +12,33 @@ diff(E, V, 0) :-
 diff(E, V, 1) :- 
 	atom(E),
 	E == V.
+
+% cokolwiek + 0	
+diff(E1 + E2, V, Ed1) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed2 == 0.
+	
+% 0 + cokolwiek	
+diff(E1 + E2, V, Ed2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed1 == 0.
+	
+% suma 2 liczb
+diff(E1 + E2, V, Ed) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	number(Ed1),
+	number(Ed2),
+	Ed == (Ed1 + Ed2).
 	
 % sum
 diff(E1 + E2, V, Ed1 + Ed2) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2).
+
+
 	
 % subtraction
 diff(E1 - E2, V, Ed1 - Ed2) :- 
