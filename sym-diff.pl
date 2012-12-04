@@ -33,18 +33,21 @@ diff(E1 / E2, V, (Ed1*E2 - E1*Ed2)/(E2*E2)) :-
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2).
 	
+% (make_mul  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var)))
 % (h(g))' = h'(g) * g'
-diff(F, X, HdG * Gd) :-
+diff(F, X, Hd * Gd) :-
     functor(F, H, 1),
     arg(1, H, G),
     
-    changeFun(H, Hd),
+    change_fun(H, Hd),
     
     diff(G, X, Gd).
     %diff(H, X, Hd),
     %functor(HdG, Hd, 1),
     %arg(1,Hd,G).
 	
+    
+
 % (f^g)' = f^(g-1)*(gf' + g'f logf) 
 diff(F^G, V, F^(G-1)*(G*Fd + Gd*F*log(F))) :-
     diff(F, V, Fd),
@@ -65,4 +68,13 @@ diff(F^G, V, F^(G-1)*(G*Fd + Gd*F*log(F))) :-
 
 %change_fun(log(E), _, 1/E) :-
 
-change_fun(sin(E), _, cos(E)). 
+change_fun(sin(E), cos(E)). 
+
+diff2(F,X, Hp + Gp) :-
+    change_fun(F, Hp),
+    arg(1, F, G),
+    diff(G, X, Gp),
+    %functor(HpG, Hp, 1).
+    arg(1, HpG, G).
+
+
