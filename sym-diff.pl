@@ -13,6 +13,7 @@ diff(E, V, 1) :-
 	atom(E),
 	E == V.
 
+%%%% sumy i optymalizacja sum
 % cokolwiek + 0	
 diff(E1 + E2, V, Ed1) :- 
 	diff(E1, V, Ed1),
@@ -39,7 +40,25 @@ diff(E1 + E2, V, Ed1 + Ed2) :-
 	diff(E2, V, Ed2).
 
 
+%%% roznice i optymalizacja roznic	
+diff(E1 - E2, V, Ed1) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed2 == 0.
 	
+diff(E1 - E2, V, Ed2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed1 == 0.
+
+diff(E1 - E2, V, Ed) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	number(Ed1),
+	number(Ed2),
+	Ed == (Ed1 + Ed2).	
+
+
 % subtraction
 diff(E1 - E2, V, Ed1 - Ed2) :- 
 	diff(E1, V, Ed1),
