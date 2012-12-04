@@ -58,17 +58,54 @@ diff(E1 - E2, V, Ed) :-
 	number(Ed2),
 	Ed == (Ed1 + Ed2).	
 
-
 % subtraction
 diff(E1 - E2, V, Ed1 - Ed2) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2).
 	
+%%% iloczyn i optymalizacje
 % (fg)' = f'g + fg'
+% mnozenie razy 0
+diff(E1 * E2, V, E1*Ed2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed1 == 0.
+	
+diff(E1 * E2, V, Ed1*E2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed2 == 0.
+	
+diff(E1 * E2, V, 0) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed2 == 0,
+	Ed1 == 0.
+
+% mnozenie razy 1
+diff(E1 * E2, V, E2 + E1*Ed2) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed1 == 1.
+	
+diff(E1 * E2, V, Ed1*E2 + E1) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed2 == 1.
+
+diff(E1 * E2, V, E2 + E1) :- 
+	diff(E1, V, Ed1),
+	diff(E2, V, Ed2),
+	Ed1 == 1,
+	Ed2 == 1.
+	
+
 diff(E1 * E2, V, Ed1*E2 + E1*Ed2) :- 
 	diff(E1, V, Ed1),
 	diff(E2, V, Ed2).
-	
+
+
+%%% iloraz i optymalizacje	
 % (f/g)' = (f'g - fg') / (g*g)
 diff(E1 / E2, V, (Ed1*E2 - E1*Ed2)/(E2*E2)) :- 
 	diff(E1, V, Ed1),
