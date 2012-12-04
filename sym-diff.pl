@@ -26,13 +26,31 @@ opt_mul(X, X, 1).
 opt_mul(Y, X, Y) :-
 	X == 1.
 
-	
 opt_mul(W, X, Y) :-
 	number(X),
 	number(Y),
 	W is X * Y.
 
 opt_mul(X*Y, X, Y).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% optymalizacja dzielenia
+opt_div(_,_,0) :-
+	throw(error(evaluation_error(zero_divisor),(is)/2)).
+	
+opt_div(0, 0, N).
+
+opt_div(X, X, 1).
+
+opt_div(1, X, Y) :-
+	X == Y.
+	
+opt_div(W, X, Y) :-
+	number(X),
+	number(Y),
+	W is X / Y.
+
+opt_div(X/Y, X, Y).
 
 % constant
 diff(E, _, 0) :- number(E).
